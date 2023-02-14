@@ -3,7 +3,7 @@ const dataContainer = document.querySelector('.dataAtual');
 
 const dia = dataAtual.getDate();
 const mes = dataAtual.getMonth() + 1;
-const ano = dataAtual.getYear();
+const ano = dataAtual.getFullYear();
 
 dataContainer.textContent = `${dia}/${mes}/${ano}`
 
