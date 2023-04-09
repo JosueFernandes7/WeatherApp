@@ -34,11 +34,8 @@ body {
   font-size: 18px;
 }
 .weather h2 > span {
-  position: absolute;
   background: #FF8C00;
   padding: 3px 6px;
-  top: -5px;
-  left: 95px;
   font-size: 12px;
   color: #fff;
   border-radius: 10px

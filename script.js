@@ -24,10 +24,12 @@ async function getWeather(lat, long) {
   const ApiKey = '6b4ef5b00c51bf760d49cf97433a9ea7'
   const lang = 'pt_br'
   const units = 'metric'
-  console.log(lat)
+
   const response = await fetch(
     `${URL}${lat}&lon=${long}&units=${units}&lang=${lang}&appid=${ApiKey}`
   )
+
+
 
   const responseJson = await response.json()
   const { name, weather, main, sys } = responseJson
