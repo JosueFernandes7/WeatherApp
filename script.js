@@ -1,60 +1,57 @@
-const dataAtual = new Date();
-const dataContainer = document.querySelector('.dataAtual');
+const dataAtual = new Date()
+const dataContainer = document.querySelector('.dataAtual')
 
-const dia = dataAtual.getDate();
-const mes = dataAtual.getMonth() + 1;
-const ano = dataAtual.getFullYear();
+const dia =
+  dataAtual.getDate() < 10 ? `0${dataAtual.getDate()}` : dataAtual.getDate()
+const mes =
+  dataAtual.getMonth() + 1 < 10
+    ? `0${dataAtual.getMonth() + 1}`
+    : dataAtual.getMonth() + 1
+const ano = dataAtual.getFullYear()
 
 dataContainer.textContent = `${dia}/${mes}/${ano}`
 
 async function getCoordinates(callback) {
   navigator.geolocation.getCurrentPosition((position) => {
-    let lat = position.coords.latitude;
-    let long = position.coords.longitude;
-    callback({lat, long});
+    let lat = position.coords.latitude
+    let long = position.coords.longitude
+    callback({ lat, long })
   })
 }
 
 async function getWeather(lat, long) {
-  const URL = "https://api.openweathermap.org/data/2.5/weather?lat="
-  const ApiKey = "6b4ef5b00c51bf760d49cf97433a9ea7";
-  const lang = "pt_br"
-  const units = "metric"
-  
-  const response =  await fetch(`${URL}${lat}&lon=${long}&units=${units}&lang=${lang}&appid=${ApiKey}`)
+  const URL = 'https://api.openweathermap.org/data/2.5/weather?lat='
+  const ApiKey = '6b4ef5b00c51bf760d49cf97433a9ea7'
+  const lang = 'pt_br'
+  const units = 'metric'
+  console.log(lat)
+  const response = await fetch(
+    `${URL}${lat}&lon=${long}&units=${units}&lang=${lang}&appid=${ApiKey}`
+  )
 
-  const responseJson = await response.json();
-  const cityName = responseJson.name;
-  const description = responseJson.weather[0].description
-  const temperature = responseJson.main.temp;
-  const Thermalsensation = responseJson.main.feels_like;
+  const responseJson = await response.json()
+  const { name, weather, main, sys } = responseJson
+  const { temp} = main
 
-  createWeatherContainer(cityName, description, temperature, Thermalsensation)
+  const description = weather[0].description
+  const icon = `https://s3-us-west-2.amazonaws.com/s.cdpn.io/162656/${weather[0]['icon']}.svg`
+  const country = sys.country
+  createWeatherContainer(name, country, temp, icon, description)
 }
 getCoordinates((coordinates) => {
-  const {lat,long} =  coordinates;
-  getWeather(lat,long)
-});
+  const { lat, long } = coordinates
+  getWeather(lat, long)
+})
 
-function createWeatherElement(item, type, className, textContent) {
-  const element = document.createElement(type);
-  element.className = className;
+function createWeatherContainer(name, country, temp, icon, description) {
+  const container = document.createElement('div')
+  container.className = 'weather';
   
-  if(textContent) {
-    element.textContent = `${textContent} = ${item} °C`;
-  } else element.textContent = item;
-  
-  return element;
-}
-
-function createWeatherContainer(cityName, cityDescription,temp,Thermalsensation) {
-  
-  const container = createWeatherElement("","div","weather");
-  const nome = createWeatherElement(cityName, 'h1', 'weatherName');
-  const descricao = createWeatherElement(cityDescription, 'p', 'weatherDescription');
-  const temperatura = createWeatherElement(temp, 'h3', 'weatherTemperature',"Temperatura Atual");
-  const sencacaoTermica = createWeatherElement(Thermalsensation, 'h3', 'weatherThermalsensation',"Sensação Térmica");
-
-  container.append(nome,temperatura,sencacaoTermica,descricao)
+  container.innerHTML = `
+    <h2>${name} <span>${country}</span></h2>
+    <h1>${parseInt(temp)}°C</h1>
+    <img src="${icon}" alt="temp">
+    <p>${description}</p>
+  `
   document.querySelector('body').append(container)
 }
